@@ -26,7 +26,6 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 void setup()
 {
   lcd.begin(16,2);
-  Serial.begin(9600);
   lcd.backlight();  //背光，不確定原因，但沒打這行還是會亮
 }
 
