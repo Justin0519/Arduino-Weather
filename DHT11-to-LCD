@@ -55,11 +55,11 @@ void loop()
   float hic = dht.computeHeatIndex(t, h, false);
   
   lcd.print("Humidity: ");       
-  lcd.print((float)h);       
+  lcd.print(h);       
   lcd.print("%");       
   lcd.setCursor(0,1); //換行
   lcd.print("Temp: ");       
-  lcd.print((float)t);       
+  lcd.print(t);       
   lcd.print("*C   ");
   
   
