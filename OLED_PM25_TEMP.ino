@@ -4,22 +4,13 @@
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
 
 /*-----DHT Setup-----*/
-#define DHTPIN 2
-#define DHTTYPE DHT11
+#define DHTPIN 4
+#define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
-
-/*-----Char Setup-----*/
-char str[10];
-
-void drawTest()
-{
-  u8g.setFont(u8g_font_unifont);
-  u8g.drawStr( 0, 30, "Loading...");
-}
 
 /*-----GP2Y-1010 Setup-----*/
 int measurePin = 0;
-int ledPower = 4;
+int ledPower = 7;
 
 int samplingTime = 280;
 int deltaTime = 40;
@@ -28,21 +19,27 @@ int sleepTime = 9680;
 float voMeasured = 0;
 float calcVoltage = 0;
 float dustDensity = 0;
-/*-------------------------*/
+
+/*-----Char Setup-----*/
+char str[10];
+
+void drawTest()
+{
+  u8g.setFont(u8g_font_osb18);
+  u8g.drawStr( 0, 30, "Loading...");
+}
 
 void setup()
 {
-/*-----Serial Monitor-----*/
   Serial.begin(9600);
+  delay(500);
   Serial.println("Loading...");
   dht.begin();
   u8g.firstPage();
+  u8g.nextPage();  
   pinMode(ledPower,OUTPUT);
-/*-----do while迴圈-----*/
-/*
-do{動作}
-while(結束條件)
-*/
+  
+
   do
   {
     drawTest();
@@ -68,7 +65,7 @@ void loop()
   // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
   // Chris Nafis (c) 2012
   dustDensity = 0.17 * calcVoltage - 0.1;
-  
+
   Serial.print("Raw Signal Value (0-1023): ");
   Serial.print(voMeasured);
   
@@ -78,10 +75,8 @@ void loop()
   Serial.print(" - Dust Density: ");
   Serial.print(dustDensity * 1000); // 這裡將數值呈現改成較常用的單位( ug/m3 )
   Serial.println(" ug/m3 ");
+
   delay(1000);
-/*-------------------------*/
-  
-  delay(1000);  
   //wait a second for measure temp.
 
   float h = dht.readHumidity();
@@ -108,23 +103,22 @@ void loop()
   
   Serial.print("Temperature: "); 
   Serial.print(t);
-  Serial.print(" *C ");
+  Serial.print(" *C\t ");
+  /*
   Serial.print(f);
   Serial.print(" *F\t");
-  
+  */
   Serial.print("Heat index: ");
   Serial.print(hi2);
   Serial.println(" *C");
 
   /*-----print in OLED-----*/
+
   u8g.firstPage();  
   do {
+
     u8g.setFont(u8g_font_helvB08);
-/*    
-    u8g.drawStr( 0, 15, "Humidity:");
-    u8g.drawStr( 80, 15, dtostrf(h, 5, 2, str));
-    u8g.drawStr( 120, 15, "%");
-*/
+
     u8g.drawStr( 0, 15, "PM2.5:");
     u8g.drawStr( 50, 15, dtostrf(dustDensity * 1000, 5, 2, str));
     u8g.drawStr( 90, 15, "ug/m3");
@@ -140,6 +134,6 @@ void loop()
     u8g.drawStr( 0, 60, "Heat index:");
     u8g.drawStr( 75, 60, dtostrf(hi2, 5, 2, str));
     u8g.drawStr( 115, 60, "\260C");
-    
+
   } while( u8g.nextPage() );
 }
